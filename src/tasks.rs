@@ -1,7 +1,9 @@
 use colored::*;
+use serde::{Deserialize, Serialize};
 
 use crate::task::Task;
 
+#[derive(Serialize, Deserialize)]
 pub struct Tasks {
     tasks: Vec<Task>,
 }
@@ -45,3 +47,5 @@ impl Tasks {
         }
     }
 }
+
+

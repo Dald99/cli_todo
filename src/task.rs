@@ -2,12 +2,15 @@ use std::fmt;
 use std::fmt::Formatter;
 
 use colored::*;
+use serde::{Deserialize, Serialize};
 
+#[derive(Serialize, Deserialize)]
 enum State {
     Done,
     NotDone,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct Task {
     name: String,
     description: Option<String>,

@@ -1,34 +1,39 @@
-use clap::{Parser};
+use clap::Parser;
 use colored::*;
-mod cli;
+
+use todo::cli::{Cli, Commands};
+use todo::json::{load_file, save_file};
 use todo::task::Task;
 use todo::tasks::Tasks;
-use todo::cli::{Cli, Commands};
 
-
+mod cli;
 fn main() {
     let cli = Cli::parse();
+    let filename = "tasks.json";
 
-    let task = Task::new("Piano".to_string(), "Learn Piano".to_string());
-    let task2 = Task::new("Rust".to_string(), "Learn Rust".to_string());
-    let task3 = Task::new("Homework".to_string(), "".to_string());
-    let task4 = Task::new("Big Mix".to_string(), "Buy Big Mix".to_string());
-    let mut tasks = Tasks::new();
-    tasks.add(task);
-    tasks.add(task2);
-    tasks.add(task3);
-    tasks.add(task4);
+    let mut tasks = match load_file(filename) {
+        Ok(tasks) => {
+            tasks
+        }
+        Err(_) => Tasks::new()
+    };
 
-    match cli.command {
+    if let Err(e) = handle_command(cli.command, &mut tasks, filename) {
+        eprintln!("{}", e);
+    }
+}
+
+fn handle_command(command: Commands, tasks: &mut Tasks, filename: &str) -> Result<(), String> {
+    match command {
         Commands::List => {
             tasks.list();
+            Ok(())
         }
         Commands::Add { title, description } => {
-            tasks.list();
             let task = Task::new(title, description);
             tasks.add(task);
             println!("{}", "Task added".green());
-            tasks.list();
+            save_file(tasks, filename).map_err(|e| e.to_string())
         }
         Commands::Remove { id } => {
             match id.parse::<usize>() {
@@ -36,17 +41,12 @@ fn main() {
                     match tasks.remove(index) {
                         Ok(()) => {
                             println!("{}", "Task removed".green());
-                            tasks.list();
+                            save_file(tasks, filename).map_err(|e| e.to_string())
                         }
-                        Err(e) => {
-                            println!("{}", e);
-                            tasks.list();
-                        }
+                        Err(e) => Err(e.to_string()),
                     }
                 }
-                Err(_) => {
-                    println!("{}", "Please enter a valid number for the task ID.".red());
-                }
+                Err(_) => Err("Please enter a valid number for the task ID.".to_string().red().to_string()),
             }
         }
         Commands::Done { id } => {
@@ -54,18 +54,13 @@ fn main() {
                 Ok(index) => {
                     match tasks.done(index) {
                         Ok(()) => {
-                            println!("{}", "Task changed".green());
-                            tasks.list();
+                            println!("{}", "Task marked as done".green());
+                            save_file(tasks, filename).map_err(|e| e.to_string())
                         }
-                        Err(e) => {
-                            println!("{}", e);
-                            tasks.list();
-                        }
+                        Err(e) => Err(e.to_string()),
                     }
                 }
-                Err(_) => {
-                    println!("{}", "Please enter a valid number for the task ID.".red());
-                }
+                Err(_) => Err("Please enter a valid number for the task ID.".to_string().red().to_string()),
             }
         }
     }
