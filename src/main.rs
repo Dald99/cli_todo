@@ -1,28 +1,10 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser};
 use colored::*;
-
+mod cli;
 use todo::task::Task;
 use todo::tasks::Tasks;
+use todo::cli::{Cli, Commands};
 
-#[derive(Parser)]
-#[command(name = "Todo", about = "A simple to-do list application")]
-struct Cli {
-    #[command(subcommand)]
-    command: Commands,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    List,
-    Add {
-        title: String,
-        #[arg(default_value = "")]
-        description: String,
-    },
-    Remove {
-        id: String
-    },
-}
 
 fn main() {
     let cli = Cli::parse();
@@ -54,6 +36,25 @@ fn main() {
                     match tasks.remove(index) {
                         Ok(()) => {
                             println!("{}", "Task removed".green());
+                            tasks.list();
+                        }
+                        Err(e) => {
+                            println!("{}", e);
+                            tasks.list();
+                        }
+                    }
+                }
+                Err(_) => {
+                    println!("{}", "Please enter a valid number for the task ID.".red());
+                }
+            }
+        }
+        Commands::Done { id } => {
+            match id.parse::<usize>() {
+                Ok(index) => {
+                    match tasks.done(index) {
+                        Ok(()) => {
+                            println!("{}", "Task changed".green());
                             tasks.list();
                         }
                         Err(e) => {

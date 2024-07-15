@@ -13,6 +13,10 @@ impl Tasks {
         }
     }
 
+    pub fn len(&self) -> usize {
+        self.tasks.len()
+    }
+
     pub fn add(&mut self, task: Task) {
         self.tasks.push(task);
     }
