@@ -1,5 +1,15 @@
 # Todo CLI Application
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Development and Future Improvements](#development-and-future-improvements)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+
 ## Overview
 
 A simple command-line to-do list application written in Rust. This application allows you to manage tasks from the
