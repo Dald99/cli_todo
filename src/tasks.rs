@@ -31,7 +31,10 @@ impl Tasks {
 
     pub fn remove(&mut self, index: usize) -> Result<(), ColoredString> {
         if index == 0 || index > self.tasks.len() {
-            Err("No task found at the given index".to_string().red())
+            Err(format!(
+                "No task found at the given index. \nThe number of tasks are: {}",
+                self.tasks.len()
+            ).to_string().red())
         } else {
             self.tasks.remove(index - 1);
             Ok(())
@@ -40,7 +43,10 @@ impl Tasks {
 
     pub fn done(&mut self, index: usize) -> Result<(), ColoredString> {
         if index == 0 || index > self.tasks.len() {
-            Err("No task found at the given index".to_string().red())
+            Err(format!(
+                "No task found at the given index. \nThe number of tasks are: {}",
+                self.tasks.len()
+            ).to_string().red())
         } else {
             self.tasks[index - 1].done();
             Ok(())

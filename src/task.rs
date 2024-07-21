@@ -12,7 +12,7 @@ enum State {
 
 #[derive(Serialize, Deserialize)]
 pub struct Task {
-    name: String,
+    title: String,
     description: Option<String>,
     state: State,
 }
@@ -27,20 +27,26 @@ impl fmt::Display for Task {
         let description = self.description.as_deref().unwrap_or("");
 
         if description.trim() != "" {
-            write!(f, "{} - {} {}", self.name, description, state)
+            write!(f, "{} - {} {}", self.title, description, state)
         } else {
-            write!(f, "{} {}", self.name, state)
+            write!(f, "{} {}", self.title, state)
         }
     }
 }
 
 impl Task {
-    pub fn new(name: String, description: String) -> Task {
+    pub fn new(title: String, description: String) -> Result<Task, ColoredString> {
         let desc = if description.is_empty() { None } else { Some(description.to_string()) };
-        Task {
-            name,
-            description: desc,
-            state: State::NotDone,
+
+        if title.trim() == "" {
+            Err("Task title cannot be empty. \nExample: `todo add \"Buy groceries\" \"Milk, Eggs, \
+            Bread\"`".to_string().red())
+        } else {
+            Ok(Task {
+                title,
+                description: desc,
+                state: State::NotDone,
+            })
         }
     }
 

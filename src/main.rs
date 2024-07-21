@@ -30,10 +30,14 @@ fn handle_command(command: Commands, tasks: &mut Tasks, filename: &str) -> Resul
             Ok(())
         }
         Commands::Add { title, description } => {
-            let task = Task::new(title, description);
-            tasks.add(task);
-            println!("{}", "Task added".green());
-            save_file(tasks, filename).map_err(|e| e.to_string())
+            match Task::new(title, description) {
+                Ok(t) => {
+                    tasks.add(t);
+                    println!("{}", "Task added".green());
+                    save_file(tasks, filename).map_err(|e| e.to_string())
+                }
+                Err(e) => Err(e.to_string())
+            }
         }
         Commands::Remove { id } => {
             match id.parse::<usize>() {
